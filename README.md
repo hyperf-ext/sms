@@ -283,14 +283,14 @@ php bin/hyperf.php gen:sms VerificationCode
 ]
 ```
 
-#### 通过 SmsMessage 类属性
+#### 通过 Smsable 类属性
 
 您也可以通过短信消息类的 `senders` 公开属性来指定可用发送器，如果您未在短信消息类中指定，那么在发送时会自动使用配置文件中指定的发送器。
 
 ```php
-use HyperfExt\Sms\SmsMessage;
+use HyperfExt\Sms\Smsable;
 
-class VerificationCode extends SmsMessage
+class VerificationCode extends Smsable
 {
     public $senders = ['aliyun', 'twillo'];
 }
@@ -450,9 +450,9 @@ Sms::to($request->user())
 
 ```php
 use HyperfExt\Contract\ShouldQueue;
-use HyperfExt\Sms\SmsMessage;
+use HyperfExt\Sms\Smsable;
 
-class VerificationCode extends SmsMessage implements ShouldQueue
+class VerificationCode extends Smsable implements ShouldQueue
 {
     /**
      * 列队名称。

@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -32,7 +32,7 @@ class RonglianDriver extends AbstractDriver
 
     protected const SUCCESS_CODE = '000000';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $datetime = date('YmdHis');
 
@@ -40,10 +40,10 @@ class RonglianDriver extends AbstractDriver
 
         $response = $this->client->request('post', $endpoint, [
             'json' => [
-                'to' => $message->to->getNationalNumber(),
-                'templateId' => (int) ($this->config->get('debug') ? self::DEBUG_TEMPLATE_ID : $message->template),
+                'to' => $smsable->to->getNationalNumber(),
+                'templateId' => (int) ($this->config->get('debug') ? self::DEBUG_TEMPLATE_ID : $smsable->template),
                 'appId' => $this->config->get('app_id'),
-                'datas' => $message->data,
+                'datas' => $smsable->data,
             ],
             'headers' => [
                 'Accept' => 'application/json',

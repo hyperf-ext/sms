@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace HyperfExt\Sms\Drivers;
 
 use GuzzleHttp\Exception\ClientException;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -29,9 +29,9 @@ class RongCloudDriver extends AbstractDriver
 
     protected const SUCCESS_CODE = 200;
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
-        $data = $message->data;
+        $data = $smsable->data;
         $action = array_key_exists('action', $data) ? $data['action'] : self::ENDPOINT_ACTION;
         $endpoint = $this->buildEndpoint($action);
 
@@ -45,9 +45,9 @@ class RongCloudDriver extends AbstractDriver
         switch ($action) {
             case 'sendCode':
                 $params = [
-                    'mobile' => $message->to->getNationalNumber(),
+                    'mobile' => $smsable->to->getNationalNumber(),
                     'region' => self::ENDPOINT_REGION,
-                    'templateId' => $message->template,
+                    'templateId' => $smsable->template,
                 ];
                 break;
             case 'verifyCode':
@@ -61,9 +61,9 @@ class RongCloudDriver extends AbstractDriver
                 break;
             case 'sendNotify':
                 $params = [
-                    'mobile' => $message->to->getNationalNumber(),
+                    'mobile' => $smsable->to->getNationalNumber(),
                     'region' => self::ENDPOINT_REGION,
-                    'templateId' => $message->template,
+                    'templateId' => $smsable->template,
                 ];
                 $params = array_merge($params, $data);
                 break;

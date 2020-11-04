@@ -12,9 +12,9 @@ namespace %NAMESPACE%;
 
 use HyperfExt\Contract\ShouldQueue;
 use HyperfExt\Sms\Contracts\SenderInterface;
-use HyperfExt\Sms\SmsMessage;
+use HyperfExt\Sms\Smsable;
 
-class %CLASS% extends SmsMessage implements ShouldQueue
+class %CLASS% extends Smsable implements ShouldQueue
 {
     /**
      * Create a new SMS message instance.

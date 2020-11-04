@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -32,15 +32,15 @@ class SmsBaoDriver extends AbstractDriver
         '51' => '手机号码不正确',
     ];
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
-        $data = $message->content;
+        $data = $smsable->content;
 
-        if ($message->to->getCountryCode() === 86) {
-            $number = $message->to->getNationalNumber();
+        if ($smsable->to->getCountryCode() === 86) {
+            $number = $smsable->to->getNationalNumber();
             $action = 'sms';
         } else {
-            $number = $message->to->toE164();
+            $number = $smsable->to->toE164();
             $action = 'wsms';
         }
 

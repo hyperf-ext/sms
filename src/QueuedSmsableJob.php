@@ -11,22 +11,22 @@ declare(strict_types=1);
 namespace HyperfExt\Sms;
 
 use Hyperf\AsyncQueue\Job;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 
-class QueuedSmsMessageJob extends Job
+class QueuedSmsableJob extends Job
 {
     /**
-     * @var \HyperfExt\Sms\Contracts\SmsMessageInterface
+     * @var \HyperfExt\Sms\Contracts\SmsableInterface
      */
-    public $message;
+    public $smsable;
 
-    public function __construct(SmsMessageInterface $message)
+    public function __construct(SmsableInterface $smsable)
     {
-        $this->message = $message;
+        $this->smsable = $smsable;
     }
 
     public function handle()
     {
-        $this->message->send();
+        $this->smsable->send();
     }
 }

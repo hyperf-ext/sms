@@ -12,7 +12,7 @@ namespace HyperfExt\Sms;
 
 use Hyperf\Utils\Traits\Macroable;
 use HyperfExt\Sms\Contracts\SenderInterface;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Events\SmsMessageSending;
 use HyperfExt\Sms\Events\SmsMessageSent;
 use Psr\Container\ContainerInterface;
@@ -58,17 +58,17 @@ class Sender implements SenderInterface
         return $this->name;
     }
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
-        $message = clone $message;
+        $smsable = clone $smsable;
 
-        call_user_func([$message, 'build'], $this);
+        call_user_func([$smsable, 'build'], $this);
 
-        $this->eventDispatcher->dispatch(new SmsMessageSending($message));
+        $this->eventDispatcher->dispatch(new SmsMessageSending($smsable));
 
-        $response = $this->driver->send($message);
+        $response = $this->driver->send($smsable);
 
-        $this->eventDispatcher->dispatch(new SmsMessageSent($message));
+        $this->eventDispatcher->dispatch(new SmsMessageSent($smsable));
 
         return $response;
     }

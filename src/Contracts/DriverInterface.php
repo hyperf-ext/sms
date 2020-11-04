@@ -17,5 +17,5 @@ interface DriverInterface
      *
      * @throws \HyperfExt\Sms\Exceptions\DriverErrorException
      */
-    public function send(SmsMessageInterface $message): array;
+    public function send(SmsableInterface $smsable): array;
 }

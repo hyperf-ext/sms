@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 class AliyunDriver extends AbstractDriver
@@ -27,11 +27,11 @@ class AliyunDriver extends AbstractDriver
 
     protected const ENDPOINT_SIGNATURE_VERSION = '1.0';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
-        $data = $message->data;
+        $data = $smsable->data;
 
-        $signName = $message->signature ?: $this->config->get('sign_name');
+        $signName = $smsable->signature ?: $this->config->get('sign_name');
 
         $params = [
             'AccessKeyId' => $this->config->get('access_key_id'),
@@ -42,9 +42,9 @@ class AliyunDriver extends AbstractDriver
             'Timestamp' => gmdate('Y-m-d\TH:i:s\Z'),
             'Action' => self::ENDPOINT_METHOD,
             'Version' => self::ENDPOINT_VERSION,
-            'PhoneNumbers' => $message->to->getCountryCode() === 86 ? $message->to->getNationalNumber() : $message->to->getFullNumberWithIDDPrefix('CN'),
+            'PhoneNumbers' => $smsable->to->getCountryCode() === 86 ? $smsable->to->getNationalNumber() : $smsable->to->getFullNumberWithIDDPrefix('CN'),
             'SignName' => $signName,
-            'TemplateCode' => $message->template,
+            'TemplateCode' => $smsable->template,
             'TemplateParam' => json_encode($data, JSON_FORCE_OBJECT),
         ];
 

@@ -20,7 +20,7 @@ namespace HyperfExt\Sms\Contracts;
  * @property null|string                 $signature
  * @property array                       $data
  */
-interface SmsMessageInterface
+interface SmsableInterface
 {
     /**
      * Set the SMS message sender number.
@@ -68,7 +68,23 @@ interface SmsMessageInterface
     public function with($key, $value = null);
 
     /**
-     * Set the sender name of the SMS message.
+     * Set the strategy.
+     *
+     * @return $this
+     */
+    public function strategy(string $class);
+
+    /**
+     * Set the list of sender name of the SMS message.
+     *
+     * @param string[] $names
+     *
+     * @return $this
+     */
+    public function senders(array $names);
+
+    /**
+     * Set the sender name of the SMS message. This will override `$senders` property value.
      *
      * @return $this
      */

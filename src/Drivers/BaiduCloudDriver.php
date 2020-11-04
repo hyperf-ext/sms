@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -28,13 +28,13 @@ class BaiduCloudDriver extends AbstractDriver
 
     protected const SUCCESS_CODE = 1000;
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $params = [
             'invokeId' => $this->config->get('invoke_id'),
-            'phoneNumber' => $message->to->getNationalNumber(),
-            'templateCode' => $message->template,
-            'contentVar' => $message->data,
+            'phoneNumber' => $smsable->to->getNationalNumber(),
+            'templateCode' => $smsable->template,
+            'contentVar' => $smsable->data,
         ];
 
         $datetime = gmdate('Y-m-d\TH:i:s\Z');

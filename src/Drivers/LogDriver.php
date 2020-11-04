@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace HyperfExt\Sms\Drivers;
 
 use Hyperf\Logger\LoggerFactory;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use Psr\Container\ContainerInterface;
 
 class LogDriver extends AbstractDriver
@@ -33,14 +33,14 @@ class LogDriver extends AbstractDriver
         );
     }
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $log = sprintf(
             "To: %s | Content: \"%s\" | Template: \"%s\" | Data: %s\n",
-            $message->to->toE164(),
-            $message->content,
-            $message->template,
-            json_encode($message->data)
+            $smsable->to->toE164(),
+            $smsable->content,
+            $smsable->template,
+            json_encode($smsable->data)
         );
 
         $this->logger->debug($log);

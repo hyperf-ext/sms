@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace HyperfExt\Sms\Drivers;
 
 use Hyperf\Utils\Arr;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -35,7 +35,7 @@ class TencentCloudDriver extends AbstractDriver
 
     protected const SIGN_END_DELIMITER = 'tc3_request';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $timestamp = time();
 
@@ -48,16 +48,16 @@ class TencentCloudDriver extends AbstractDriver
         ];
 
         $params = [
-            'PhoneNumberSet' => [$message->to->toE164()],
-            'TemplateID' => $message->template,
+            'PhoneNumberSet' => [$smsable->to->toE164()],
+            'TemplateID' => $smsable->template,
             'SmsSdkAppid' => $this->config->get('sdk_app_id'),
-            'TemplateParamSet' => empty($message->data) ? null : $message->data,
+            'TemplateParamSet' => empty($smsable->data) ? null : $smsable->data,
         ];
 
-        if ($message->to->getCountryCode() === 86) {
-            $params['Sign'] = $message->signature ?: $this->config->get('sign');
+        if ($smsable->to->getCountryCode() === 86) {
+            $params['Sign'] = $smsable->signature ?: $this->config->get('sign');
         } else {
-            $params['SenderId'] = $this->config->get('from' . ($message->from ?: 'default'));
+            $params['SenderId'] = $this->config->get('from' . ($smsable->from ?: 'default'));
         }
 
         $params = array_filter($params);

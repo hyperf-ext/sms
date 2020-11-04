@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace HyperfExt\Sms\Drivers;
 
 use GuzzleHttp\Exception\ClientException;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -25,9 +25,9 @@ class YunxinDriver extends AbstractDriver
 
     protected const SUCCESS_CODE = 200;
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
-        $data = $message->data;
+        $data = $smsable->data;
 
         $action = isset($data['action']) ? $data['action'] : self::ENDPOINT_ACTION;
 
@@ -35,11 +35,11 @@ class YunxinDriver extends AbstractDriver
 
         switch ($action) {
             case 'sendCode':
-                $params = $this->buildSendCodeParams($message);
+                $params = $this->buildSendCodeParams($smsable);
 
                 break;
             case 'verifyCode':
-                $params = $this->buildVerifyCodeParams($message);
+                $params = $this->buildVerifyCodeParams($smsable);
 
                 break;
             default:
@@ -66,13 +66,13 @@ class YunxinDriver extends AbstractDriver
         return $result;
     }
 
-    public function buildSendCodeParams(SmsMessageInterface $message): array
+    public function buildSendCodeParams(SmsableInterface $smsable): array
     {
-        $data = $message->data;
-        $template = $message->template;
+        $data = $smsable->data;
+        $template = $smsable->template;
 
         return [
-            'mobile' => $message->to->toE164(),
+            'mobile' => $smsable->to->toE164(),
             'authCode' => array_key_exists('code', $data) ? $data['code'] : '',
             'deviceId' => array_key_exists('device_id', $data) ? $data['device_id'] : '',
             'templateid' => is_string($template) ? $template : '',
@@ -81,16 +81,16 @@ class YunxinDriver extends AbstractDriver
         ];
     }
 
-    public function buildVerifyCodeParams(SmsMessageInterface $message): array
+    public function buildVerifyCodeParams(SmsableInterface $smsable): array
     {
-        $data = $message->data;
+        $data = $smsable->data;
 
         if (! array_key_exists('code', $data)) {
             throw new DriverErrorException('"code" cannot be empty', 0);
         }
 
         return [
-            'mobile' => $message->to->toE164(),
+            'mobile' => $smsable->to->toE164(),
             'code' => $data['code'],
         ];
     }

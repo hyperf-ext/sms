@@ -17,22 +17,22 @@ interface SmsManagerInterface
      *
      * @throws \HyperfExt\Sms\Exceptions\StrategicallySendMessageException
      */
-    public function sendNow(SmsMessageInterface $message): array;
+    public function sendNow(SmsableInterface $smsable): array;
 
     /**
      * Send the given message.
      *
      * @return array|bool
      */
-    public function send(SmsMessageInterface $message);
+    public function send(SmsableInterface $smsable);
 
     /**
      * Queue the message for sending.
      */
-    public function queue(SmsMessageInterface $message, ?string $queue = null): bool;
+    public function queue(SmsableInterface $smsable, ?string $queue = null): bool;
 
     /**
      * Deliver the queued message after the given delay.
      */
-    public function later(SmsMessageInterface $message, int $delay, ?string $queue = null): bool;
+    public function later(SmsableInterface $smsable, int $delay, ?string $queue = null): bool;
 }

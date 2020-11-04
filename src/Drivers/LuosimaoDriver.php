@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -24,13 +24,13 @@ class LuosimaoDriver extends AbstractDriver
 
     protected const ENDPOINT_FORMAT = 'json';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $endpoint = $this->buildEndpoint('sms-api', 'send');
 
         $response = $this->client->post($endpoint, [
-            'mobile' => $message->to->getNationalNumber(),
-            'message' => $message->content,
+            'mobile' => $smsable->to->getNationalNumber(),
+            'message' => $smsable->content,
         ], [
             'Authorization' => 'Basic ' . base64_encode('api:key-' . $this->config->get('api_key')),
         ]);

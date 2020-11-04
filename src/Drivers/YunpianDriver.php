@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -24,18 +24,18 @@ class YunpianDriver extends AbstractDriver
 
     protected const ENDPOINT_FORMAT = 'json';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $endpoint = $this->buildEndpoint('sms', 'sms', 'single_send');
 
-        $signature = $message->signature ?: $this->config->get('signature', '');
+        $signature = $smsable->signature ?: $this->config->get('signature', '');
 
-        $content = $message->content;
+        $content = $smsable->content;
 
         $response = $this->client->request('post', $endpoint, [
             'form_params' => [
                 'apikey' => $this->config->get('api_key'),
-                'mobile' => $message->to->toE164(),
+                'mobile' => $smsable->to->toE164(),
                 'text' => stripos($content, '【') === 0 ? $content : $signature . $content,
             ],
             'exceptions' => false,

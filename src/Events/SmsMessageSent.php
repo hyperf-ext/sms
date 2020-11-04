@@ -10,22 +10,22 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Events;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 
 class SmsMessageSent
 {
     /**
      * The message instance.
      *
-     * @var \HyperfExt\Sms\Contracts\SmsMessageInterface
+     * @var \HyperfExt\Sms\Contracts\SmsableInterface
      */
-    public $message;
+    public $smsable;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(SmsMessageInterface $message)
+    public function __construct(SmsableInterface $smsable)
     {
-        $this->message = $message;
+        $this->smsable = $smsable;
     }
 }

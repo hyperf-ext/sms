@@ -13,8 +13,8 @@ namespace HyperfExt\Sms;
 use Hyperf\Contract\ConfigInterface;
 use HyperfExt\Contract\ShouldQueue;
 use HyperfExt\Sms\Contracts\SenderInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Contracts\SmsManagerInterface;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
 use HyperfExt\Sms\Exceptions\StrategicallySendMessageException;
 use InvalidArgumentException;
 use LogicException;
@@ -62,15 +62,15 @@ class SmsManager implements SmsManagerInterface
         return $this->senders[$name];
     }
 
-    public function sendNow(SmsMessageInterface $message): array
+    public function sendNow(SmsableInterface $smsable): array
     {
-        $senders = empty($message->sender) ? $this->applyStrategy($message) : [$message->sender];
+        $senders = empty($smsable->sender) ? $this->applyStrategy($smsable) : [$smsable->sender];
 
         $exception = null;
 
         foreach ($senders as $sender) {
             try {
-                return $message->send($this->get($sender));
+                return $smsable->send($this->get($sender));
             } catch (Throwable $throwable) {
                 $exception = empty($exception)
                     ? new StrategicallySendMessageException('The SMS manger encountered some errors on strategically send the message', $throwable)
@@ -81,23 +81,23 @@ class SmsManager implements SmsManagerInterface
         throw $exception;
     }
 
-    public function send(SmsMessageInterface $message)
+    public function send(SmsableInterface $smsable)
     {
-        if ($message instanceof ShouldQueue) {
-            return $message->queue();
+        if ($smsable instanceof ShouldQueue) {
+            return $smsable->queue();
         }
 
-        return $this->sendNow($message);
+        return $this->sendNow($smsable);
     }
 
-    public function queue(SmsMessageInterface $message, ?string $queue = null): bool
+    public function queue(SmsableInterface $smsable, ?string $queue = null): bool
     {
-        return $message->queue($queue);
+        return $smsable->queue($queue);
     }
 
-    public function later(SmsMessageInterface $message, int $delay, ?string $queue = null): bool
+    public function later(SmsableInterface $smsable, int $delay, ?string $queue = null): bool
     {
-        return $message->later($delay, $queue);
+        return $smsable->later($delay, $queue);
     }
 
     /**
@@ -106,15 +106,15 @@ class SmsManager implements SmsManagerInterface
      *
      * @throws \HyperfExt\Sms\Exceptions\InvalidMobileNumberException
      */
-    public function to($number, $defaultRegion = null): PendingSmsMessage
+    public function to($number, $defaultRegion = null): PendingSms
     {
-        return (new PendingSmsMessage($this))->to($number, $defaultRegion);
+        return (new PendingSms($this))->to($number, $defaultRegion);
     }
 
-    protected function applyStrategy(SmsMessageInterface $message): array
+    protected function applyStrategy(SmsableInterface $smsable): array
     {
-        $senders = (is_array($message->senders) && count($message->senders) > 0)
-            ? $message->senders
+        $senders = (is_array($smsable->senders) && count($smsable->senders) > 0)
+            ? $smsable->senders
             : (
                 is_array($this->config['default']['senders'])
                     ? $this->config['default']['senders']
@@ -125,7 +125,7 @@ class SmsManager implements SmsManagerInterface
             throw new LogicException('The SMS senders value is missing on SmsMessage class or default config');
         }
 
-        $strategy = $message->strategy ?: $this->config['default']['strategy'];
+        $strategy = $smsable->strategy ?: $this->config['default']['strategy'];
 
         if (empty($strategy)) {
             throw new LogicException('The SMS strategy value is missing on SmsMessage class or default config');

@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 class UCloudDriver extends AbstractDriver
@@ -21,9 +21,9 @@ class UCloudDriver extends AbstractDriver
 
     protected const SUCCESS_CODE = 0;
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
-        $params = $this->buildParams($message);
+        $params = $this->buildParams($smsable);
 
         $response = $this->client->get(self::ENDPOINT_URL, $params);
 
@@ -36,13 +36,13 @@ class UCloudDriver extends AbstractDriver
         return $result;
     }
 
-    protected function buildParams(SmsMessageInterface $message): array
+    protected function buildParams(SmsableInterface $smsable): array
     {
-        $data = $message->data;
+        $data = $smsable->data;
         $params = [
             'Action' => self::ENDPOINT_Action,
-            'SigContent' => $message->signature ?: $this->config->get('sig_content'),
-            'TemplateId' => $message->template,
+            'SigContent' => $smsable->signature ?: $this->config->get('sig_content'),
+            'TemplateId' => $smsable->template,
             'PublicKey' => $this->config->get('public_key'),
         ];
         $code = isset($data['code']) ? $data['code'] : '';
@@ -66,7 +66,7 @@ class UCloudDriver extends AbstractDriver
                 $params['PhoneNumbers.0'] = $mobiles;
             }
         } else {
-            $params['PhoneNumbers.0'] = $message->to->getNationalNumber();
+            $params['PhoneNumbers.0'] = $smsable->to->getNationalNumber();
         }
 
         if (! is_null($this->config->get('project_id')) && ! empty($this->config->get('project_id'))) {

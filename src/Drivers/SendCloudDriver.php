@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -20,14 +20,14 @@ class SendCloudDriver extends AbstractDriver
 {
     const ENDPOINT_TEMPLATE = 'http://www.sendcloud.net/smsapi/%s';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $params = [
             'smsUser' => $this->config->get('sms_user'),
-            'templateId' => $message->template,
-            'msgType' => $message->to->getCountryCode() === 86 ? 0 : 2,
-            'phone' => $message->to->getFullNumberWithIDDPrefix('CN'),
-            'vars' => $this->formatTemplateVars($message->data),
+            'templateId' => $smsable->template,
+            'msgType' => $smsable->to->getCountryCode() === 86 ? 0 : 2,
+            'phone' => $smsable->to->getFullNumberWithIDDPrefix('CN'),
+            'vars' => $this->formatTemplateVars($smsable->data),
         ];
 
         if ($this->config->get('timestamp', false)) {

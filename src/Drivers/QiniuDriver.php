@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -22,15 +22,15 @@ class QiniuDriver extends AbstractDriver
 
     protected const ENDPOINT_VERSION = 'v1';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $endpoint = $this->buildEndpoint('sms', 'message/single');
 
-        $data = $message->data;
+        $data = $smsable->data;
 
         $params = [
-            'template_id' => $message->template,
-            'mobile' => $message->to->getNationalNumber(),
+            'template_id' => $smsable->template,
+            'mobile' => $smsable->to->getNationalNumber(),
         ];
 
         if (! empty($data)) {

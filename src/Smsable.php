@@ -16,11 +16,11 @@ use Hyperf\Contract\UnCompressInterface;
 use Hyperf\Utils\ApplicationContext;
 use HyperfExt\Sms\Contracts\MobileNumberInterface;
 use HyperfExt\Sms\Contracts\SenderInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Contracts\SmsManagerInterface;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
 use HyperfExt\Sms\Strategies\OrderStrategy;
 
-abstract class SmsMessage implements SmsMessageInterface, CompressInterface, UnCompressInterface
+abstract class Smsable implements SmsableInterface, CompressInterface, UnCompressInterface
 {
     /**
      * @var string
@@ -113,6 +113,20 @@ abstract class SmsMessage implements SmsMessageInterface, CompressInterface, UnC
         return $this;
     }
 
+    public function strategy(string $class)
+    {
+        $this->strategy = $class;
+
+        return $this;
+    }
+
+    public function senders(array $names)
+    {
+        $this->senders = $names;
+
+        return $this;
+    }
+
     public function sender(string $name)
     {
         $this->sender = $name;
@@ -168,7 +182,7 @@ abstract class SmsMessage implements SmsMessageInterface, CompressInterface, UnC
     /**
      * Push the queued SMS message job onto the queue.
      */
-    protected function pushQueuedJob(QueuedSmsMessageJob $job, ?string $queue = null, ?int $delay = null)
+    protected function pushQueuedJob(QueuedSmsableJob $job, ?string $queue = null, ?int $delay = null)
     {
         $queue = $queue ?: (property_exists($this, 'queue') ? $this->queue : array_key_first(config('async_queue')));
 
@@ -178,8 +192,8 @@ abstract class SmsMessage implements SmsMessageInterface, CompressInterface, UnC
     /**
      * Make the queued SMS message job instance.
      */
-    protected function newQueuedJob(): QueuedSmsMessageJob
+    protected function newQueuedJob(): QueuedSmsableJob
     {
-        return new QueuedSmsMessageJob($this);
+        return new QueuedSmsableJob($this);
     }
 }

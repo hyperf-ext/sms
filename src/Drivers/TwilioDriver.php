@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace HyperfExt\Sms\Drivers;
 
 use GuzzleHttp\Exception\ClientException;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -26,15 +26,15 @@ class TwilioDriver extends AbstractDriver
         'undelivered',
     ];
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $accountSid = $this->config->get('account_sid');
         $endpoint = $this->buildEndPoint($accountSid);
 
         $params = [
-            'To' => $message->to->toE164(),
-            'From' => $this->config->get('from' . ($message->from ?: 'default')),
-            'Body' => $message->content,
+            'To' => $smsable->to->toE164(),
+            'From' => $this->config->get('from' . ($smsable->from ?: 'default')),
+            'Body' => $smsable->content,
         ];
 
         try {

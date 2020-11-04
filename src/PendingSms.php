@@ -12,10 +12,10 @@ namespace HyperfExt\Sms;
 
 use Hyperf\Utils\ApplicationContext;
 use HyperfExt\Contract\HasMobileNumber;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Contracts\SmsManagerInterface;
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
 
-class PendingSmsMessage
+class PendingSms
 {
     /**
      * The "to" recipient of the message.
@@ -72,9 +72,9 @@ class PendingSmsMessage
     /**
      * Send a new SMS message instance immediately.
      */
-    public function sendNow(SmsMessageInterface $message): array
+    public function sendNow(SmsableInterface $smsable): array
     {
-        return $this->manger->sendNow($this->fill($message));
+        return $this->manger->sendNow($this->fill($smsable));
     }
 
     /**
@@ -82,36 +82,36 @@ class PendingSmsMessage
      *
      * @return array|bool
      */
-    public function send(SmsMessageInterface $message)
+    public function send(SmsableInterface $smsable)
     {
-        return $this->manger->send($this->fill($message));
+        return $this->manger->send($this->fill($smsable));
     }
 
     /**
      * Push the given SMS message onto the queue.
      */
-    public function queue(SmsMessageInterface $message, ?string $queue = null): bool
+    public function queue(SmsableInterface $smsable, ?string $queue = null): bool
     {
-        return $this->manger->queue($this->fill($message), $queue);
+        return $this->manger->queue($this->fill($smsable), $queue);
     }
 
     /**
      * Deliver the queued SMS message after the given delay.
      */
-    public function later(SmsMessageInterface $message, int $delay, ?string $queue = null): bool
+    public function later(SmsableInterface $smsable, int $delay, ?string $queue = null): bool
     {
-        return $this->manger->later($this->fill($message), $delay, $queue);
+        return $this->manger->later($this->fill($smsable), $delay, $queue);
     }
 
     /**
      * Populate the SMS message with the addresses.
      */
-    protected function fill(SmsMessageInterface $message): SmsMessageInterface
+    protected function fill(SmsableInterface $smsable): SmsableInterface
     {
-        $message->to($this->to);
+        $smsable->to($this->to);
         if ($this->sender) {
-            $message->sender($this->sender->getName());
+            $smsable->sender($this->sender->getName());
         }
-        return $message;
+        return $smsable;
     }
 }

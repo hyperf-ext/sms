@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 
 /**
@@ -22,12 +22,12 @@ class JuheDataDriver extends AbstractDriver
 
     protected const ENDPOINT_FORMAT = 'json';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $params = [
-            'mobile' => $message->to->getNationalNumber(),
-            'tpl_id' => $message->template,
-            'tpl_value' => $this->formatTemplateVars($message->data),
+            'mobile' => $smsable->to->getNationalNumber(),
+            'tpl_id' => $smsable->template,
+            'tpl_value' => $this->formatTemplateVars($smsable->data),
             'dtype' => self::ENDPOINT_FORMAT,
             'key' => $this->config->get('app_key'),
         ];

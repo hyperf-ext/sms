@@ -15,7 +15,7 @@ use HyperfExt\Contract\HasMailAddress;
 use HyperfExt\Sms\Contracts\SmsManagerInterface;
 
 /**
- * @method static \HyperfExt\Sms\PendingSmsMessage to(HasMailAddress|string $number, null|int|string $defaultRegion = null)
+ * @method static \HyperfExt\Sms\PendingSms to(HasMailAddress|string $number, null|int|string $defaultRegion = null)
  */
 class Sms
 {
@@ -28,7 +28,7 @@ class Sms
 
     public static function sender(string $name)
     {
-        return (new PendingSmsMessage(static::getManager()))->sender($name);
+        return (new PendingSms(static::getManager()))->sender($name);
     }
 
     protected static function getManager()

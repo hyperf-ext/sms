@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Sms\Drivers;
 
-use HyperfExt\Sms\Contracts\SmsMessageInterface;
+use HyperfExt\Sms\Contracts\SmsableInterface;
 use HyperfExt\Sms\Exceptions\DriverErrorException;
 use HyperfExt\Sms\Exceptions\RequestException;
 use InvalidArgumentException;
@@ -23,7 +23,7 @@ class HuaweiCloudDriver extends AbstractDriver
 
     protected const SUCCESS_CODE = '000000';
 
-    public function send(SmsMessageInterface $message): array
+    public function send(SmsableInterface $smsable): array
     {
         $appKey = $this->config->get('app_key');
         $appSecret = $this->config->get('app_secret');
@@ -32,11 +32,11 @@ class HuaweiCloudDriver extends AbstractDriver
         $endpoint = $this->getEndpoint();
         $headers = $this->getHeaders($appKey, $appSecret);
 
-        $templateId = $message->template;
-        $messageData = $message->data;
+        $templateId = $smsable->template;
+        $messageData = $smsable->data;
 
         // 短信签名通道号码
-        $from = $message->from ?: 'default';
+        $from = $smsable->from ?: 'default';
         $channel = $channels[$from] ?? '';
 
         if (empty($channel)) {
@@ -45,7 +45,7 @@ class HuaweiCloudDriver extends AbstractDriver
 
         $params = [
             'from' => $channel,
-            'to' => $message->to->toE164(),
+            'to' => $smsable->to->toE164(),
             'templateId' => $templateId,
             'templateParas' => json_encode($messageData),
         ];
