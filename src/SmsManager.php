@@ -50,7 +50,7 @@ class SmsManager implements SmsManagerInterface
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->config = $container->get(ConfigInterface::class);
+        $this->config = $container->get(ConfigInterface::class)->get('sms');
     }
 
     public function get(string $name): SenderInterface
@@ -139,22 +139,12 @@ class SmsManager implements SmsManagerInterface
      */
     protected function resolve(string $name): SenderInterface
     {
-        $config = $this->getConfig($name);
+        $config = $this->config['senders'][$name] ?? null;
 
         if (is_null($config)) {
             throw new InvalidArgumentException("The SMS sender [{$name}] is not defined.");
         }
 
         return make(Sender::class, compact('name', 'config'));
-    }
-
-    /**
-     * Get the mail connection configuration.
-     *
-     * @return array
-     */
-    protected function getConfig(string $name)
-    {
-        return $this->config->get("sms.senders.{$name}");
     }
 }
