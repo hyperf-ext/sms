@@ -131,7 +131,7 @@ class SmsManager implements SmsManagerInterface
             throw new LogicException('The SMS strategy value is missing on SmsMessage class or default config');
         }
 
-        return make($strategy)->apply($senders);
+        return make($strategy)->apply($senders, $smsable->to);
     }
 
     /**
