@@ -160,6 +160,16 @@ return [
             ],
         ],
 
+        'itexmo' => [
+            'driver' => \HyperfExt\Sms\Drivers\ItexmoDriver::class,
+            'config' => [
+                'email' => '',
+                'password' => '',
+                'api_code' => '',
+                'sender_id' => '',
+            ],
+        ],
+
         'log' => [
             'driver' => \HyperfExt\Sms\Drivers\LogDriver::class,
             'config' => [
